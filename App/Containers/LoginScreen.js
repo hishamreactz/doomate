@@ -13,6 +13,8 @@ import { connect } from 'react-redux'
 import styles from './Styles/LoginScreenStyles'
 import {Images, Metrics} from '../Themes'
 import LoginActions from '../Redux/LoginRedux'
+import API from '../Services/Api'
+import FJSON from 'format-json'
 
 class LoginScreen extends React.Component {
   static propTypes = {
@@ -28,12 +30,13 @@ class LoginScreen extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      username: 'reactnative@infinite.red',
-      password: 'password',
+      username: 'admin@gocart.in',
+      password: 'asddsa',
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
     }
     this.isAttempting = false
+    this.api = API.create()
   }
 
   componentWillReceiveProps (newProps) {
@@ -75,12 +78,33 @@ class LoginScreen extends React.Component {
     })
   }
 
-  handlePressLogin = () => {
+  //i dont frickin understand
+  // handlePressLogin = () => {
+  //   const { username, password } = this.state
+  //   this.isAttempting = true
+  //   // attempt a login - a saga is listening to pick it up from here.
+  //   this.props.attemptLogin(username, password)
+  // }
+
+  tryLogin = async()=>{ 
+
     const { username, password } = this.state
     this.isAttempting = true
-    // attempt a login - a saga is listening to pick it up from here.
-    this.props.attemptLogin(username, password)
+
+    //   this.props.attemptLogin(username, password)
+
+    const apiresp =   await this.api.tryLogin(username,password)
+
+    this.setState({
+
+      status:apiresp
+
+    });
+
+    console.log(this.state.status.data);
   }
+
+
 
   handleChangeUsername = (text) => {
     this.setState({ username: text })
@@ -135,7 +159,7 @@ class LoginScreen extends React.Component {
           </View>
 
           <View style={[styles.loginRow]}>
-            <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.handlePressLogin}>
+            <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.tryLogin}>
               <View style={styles.loginButton}>
                 <Text style={styles.loginText}>Sign In</Text>
               </View>
